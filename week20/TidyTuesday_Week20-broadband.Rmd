@@ -27,7 +27,7 @@ counties <- get_urbn_map("counties", sf=TRUE) %>%
 
 
 ```{r use, fig.height=8, fig.width=10}
-ggplot() +
+usagePlot <- ggplot() +
   geom_sf(data = states,
           fill = gray(0.8), color = "black", size=.1) +
   geom_sf(data = counties, aes(fill = usage), color = NA) +
@@ -46,10 +46,11 @@ ggplot() +
   guides(fill = guide_colorbar(barwidth = 24, barheight=1)) +
         labs(title = "Broadband usage",
              caption = "Data source: Microsoft / The Verge")
+usagePlot
 ```
 
 ```{r avail, fig.height=8, fig.width=10}
-ggplot() +
+availabilityPlot <- ggplot() +
   geom_sf(data = states,
           fill = gray(0.8), color = "black", size=.1) +
   geom_sf(data = counties, aes(fill = avail), color = NA) +
@@ -68,4 +69,13 @@ ggplot() +
   guides(fill = guide_colorbar(barwidth = 24, barheight=1)) +
         labs(title = "Broadband availability per FCC",
              caption = "Data source: Microsoft / The Verge")
+availabilityPlot
+```
+
+```{r savePlots, include=FALSE}
+ggsave("BroadbandAvailability.png", availabilityPlot, 
+       width=8, height=8, units="in", dpi=300)
+ggsave("BroadbandUsage.png", usagePlot, 
+       width=8, height=8, units="in", dpi=300)
+
 ```
