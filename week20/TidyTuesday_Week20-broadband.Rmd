@@ -1,0 +1,71 @@
+---
+title: "Tidy Tuesday Week 20 - broadband"
+author: "Andrew Kniss"
+date: "5/15/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+library(tidyverse)
+library(urbnmapr)
+
+#tuesdata <- tidytuesdayR::tt_load(2021, week = 20)
+# bb.dat <- tuesdata$broadband %>%
+#   mutate(county_fips = sprintf("%05d", `COUNTY ID`),
+#          avail = as.numeric(`BROADBAND AVAILABILITY PER FCC`),
+#          usage = as.numeric(`BROADBAND USAGE`))
+#saveRDS(bb.dat, file = "tuesdata20.RDS")
+bb.dat <- readRDS("tuesdata20.RDS")
+glimpse(bb.dat)
+
+states <- get_urbn_map("states", sf=TRUE) 
+counties <- get_urbn_map("counties", sf=TRUE) %>%
+    left_join(bb.dat)
+```
+
+
+```{r use, fig.height=8, fig.width=10}
+ggplot() +
+  geom_sf(data = states,
+          fill = gray(0.8), color = "black", size=.1) +
+  geom_sf(data = counties, aes(fill = usage), color = NA) +
+  scale_fill_continuous(name = element_blank(),
+                        label = scales::comma, 
+                        low = "#ffffe6", high = "#003300",
+                                na.value = "white") +
+  geom_sf(data = states,
+          fill = NA, color = "black", size=.1) +
+  coord_sf(datum = NA) +
+          theme(legend.position = "top",
+                legend.spacing.x = unit(0.5, "cm"),
+                legend.justification = 'left',
+                legend.title = element_text(size=24),
+                legend.text = element_text(size=14)) +
+  guides(fill = guide_colorbar(barwidth = 24, barheight=1)) +
+        labs(title = "Broadband usage",
+             caption = "Data source: Microsoft / The Verge")
+```
+
+```{r avail, fig.height=8, fig.width=10}
+ggplot() +
+  geom_sf(data = states,
+          fill = gray(0.8), color = "black", size=.1) +
+  geom_sf(data = counties, aes(fill = avail), color = NA) +
+  scale_fill_continuous(name = element_blank(),
+                        label = scales::comma, 
+                        low = "#ffffe6", high = "#003300",
+                                na.value = "white") +
+  geom_sf(data = states,
+          fill = NA, color = "black", size=.1) +
+  coord_sf(datum = NA) +
+          theme(legend.position = "top",
+                legend.spacing.x = unit(0.5, "cm"),
+                legend.justification = 'left',
+                legend.title = element_text(size=24),
+                legend.text = element_text(size=14)) +
+  guides(fill = guide_colorbar(barwidth = 24, barheight=1)) +
+        labs(title = "Broadband availability per FCC",
+             caption = "Data source: Microsoft / The Verge")
+```
